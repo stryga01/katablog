@@ -1,0 +1,23 @@
+.author{
+  flex-basis: 18%;
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: space-between;
+  gap: 10px;
+
+  &__info{
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+  }
+  &__name{
+    font-size: 18px;
+    font-weight: 500;
+  }
+  &__date{
+    font-size: 12px;
+    line-height: 22px;
+    color:#7D7D7D;
+  }
+}
