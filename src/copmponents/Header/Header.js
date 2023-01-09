@@ -1,34 +1,54 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
+import * as actions from '../../store/actions/ArticlesAction'
 import Avatar from '../Avatar/Avatar'
 
 import s from './Header.module.scss'
 
 const Header = (props) => {
-  const { setCurrentPage, isLogin, logOut, user } = props
-  const { username, image } = user
+  const { isLoggedIn, currentUser, logOutAction, setCurrentPage, currentPage, setLoadingAction } = props
+  const { username, image } = currentUser
+  const location = useLocation()
+  const logOut = () => {
+    localStorage.removeItem('token')
+    logOutAction()
+    setLoadingAction()
+  }
 
   return (
     <header className={s.header}>
       <div className={s.container}>
-        <h1 className={s.header__title}>
+        <h1
+          className={s.header__title}
+          onClick={() => {
+            currentPage !== 1 || location.pathname !== '/articles' ? setCurrentPage(1) : null
+          }}
+        >
           <Link to="/articles">
-            <span onClick={() => setCurrentPage(1)}>Kata Blog</span>
+            <span>Kata Blog</span>
           </Link>
         </h1>
         <div className={s.header__info}>
+          {isLoggedIn ? (
+            <Link to="/new-article">
+              <span className={`${s.header__btn} ${s.header__btn_create}`}>Create article</span>
+            </Link>
+          ) : null}
+
           <Link to="/profile">
             <span className={s.header__username}>{username}</span>
           </Link>
-          {isLogin && <Avatar currentUser={true} image={image} />}
+          {isLoggedIn && <Avatar currentUser={true} image={image} />}
           <div className={s.header__actions}>
-            {!isLogin && (
+            {!isLoggedIn && (
               <button className={s.header__btn}>
                 <Link to="/sign-in">Sign In</Link>
               </button>
             )}
-            {!isLogin ? (
+            {!isLoggedIn ? (
               <button className={s.header__btn}>
                 <Link to="/sign-up">Sign Up</Link>
               </button>
@@ -44,4 +64,18 @@ const Header = (props) => {
   )
 }
 
-export default Header
+const mapStateToProps = ({ articles }) => {
+  return {
+    currentPage: articles.currentPage,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  const { setCurrentPage, setLoadingAction } = bindActionCreators(actions, dispatch)
+  return {
+    setCurrentPage,
+    setLoadingAction,
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header)

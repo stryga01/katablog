@@ -1,14 +1,23 @@
-*{
+* {
   padding: 0;
   margin: 0;
   text-decoration: none;
   list-style-type: none;
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
-  color:#090909;
+}
+
+.button{
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+a {
+  color: #090909;
 }
 
 body{
   background-color: #EBEEF3;
 }
+
 

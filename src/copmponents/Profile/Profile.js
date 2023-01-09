@@ -1,16 +1,20 @@
-/*eslint-disable*/
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+
 import ServiceBlog from '../../serviceBlog/ServiceBlog'
+import Input from '../Input/Input'
+import * as actions from '../../store/actions/UserActions'
 
 import s from './Profile.module.scss'
 
-const Profile = ({ history, setUser }) => {
+const Profile = ({ signInAction }) => {
   const { updateCurrentUser } = new ServiceBlog()
 
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     reset,
     setError,
@@ -20,7 +24,7 @@ const Profile = ({ history, setUser }) => {
     const token = localStorage.getItem('token')
     updateCurrentUser(data, token)
       .then(({ user }) => {
-        setUser(user)
+        signInAction(user.token)
         reset()
       })
       .catch(({ errors }) => {
@@ -32,87 +36,73 @@ const Profile = ({ history, setUser }) => {
         }
       })
   }
-
-  const { username, email, password, image } = errors
   return (
     <form className={s.profile} onSubmit={handleSubmit(onSubmit)}>
       <h1>Edit Profile</h1>
       <ul className={s.profile__list}>
         <li className={s.profile__item}>
-          <label className={s.profile__label} htmlFor="username">
-            Username
-          </label>
-          <input
-            {...register('username', {
-              required: 'Поле обязательно к заполнению',
-            })}
-            className={`${s.profile__input} ${username && s.profile__input_error}`}
-            id="username"
-            type="text"
-            placeholder="Username"
-          />
-          {username && <span className={s.profile__error}>{username.message}</span>}
-        </li>
-        <li className={s.profile__item}>
-          <label className={s.profile__label} htmlFor="email">
-            Email address
-          </label>
-          <input
-            {...register('email', {
-              required: 'Поле обязательно к заполнению',
-              pattern: {
-                value: /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/,
-                message: 'Некорректный email',
-              },
-            })}
-            className={`${s.profile__input} ${email && s.profile__input_error}`}
-            id="email"
-            type="email"
-            placeholder="Email"
+          <Input
+            errors={errors}
+            register={{
+              ...register('username', {
+                required: 'Поле обязательно к заполнению',
+              }),
+            }}
+            setting={{ name: 'username', type: 'text', placeholder: 'Username', label: 'Username' }}
           />
         </li>
-        {email && <span className={s.profile__error}>{email.message}</span>}
         <li className={s.profile__item}>
-          <label className={s.profile__label} htmlFor="password">
-            New password
-          </label>
-          <input
-            {...register('password', {
-              required: 'Поле обязательно к заполнению',
-              minLength: {
-                value: 6,
-                message: 'Длина пароля должна быть от 6 до 40 символов',
-              },
-              maxLength: {
-                value: 40,
-                message: 'Длина пароля должна быть от 6 до 40 символов',
-              },
-            })}
-            className={`${s.profile__input} ${password && s.profile__input_error}`}
-            id="password"
-            type="password"
-            placeholder="New password"
-            autoComplete="new-password"
+          <Input
+            errors={errors}
+            setting={{ name: 'email', label: 'Email address', placeholder: 'Email', type: 'email' }}
+            register={{
+              ...register('email', {
+                required: 'Поле обязательно к заполнению',
+                pattern: {
+                  value: /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/,
+                  message: 'Некорректный email',
+                },
+              }),
+            }}
           />
-          {password && <span className={s.profile__error}>{password.message}</span>}
         </li>
         <li className={s.profile__item}>
-          <label className={s.profile__label} htmlFor="imageUrl">
-            Avatar image (url)
-          </label>
-          <input
-            {...register('image', {
-              pattern: {
-                value: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
-                message: 'Некорректный url-адрес',
-              },
-            })}
-            className={`${s.profile__input} ${image && s.profile__input_error}`}
-            id="image"
-            type="text"
-            placeholder="Image url"
+          <Input
+            errors={errors}
+            setting={{
+              type: 'password',
+              label: 'New password',
+              placeholder: 'New password',
+              name: 'password',
+              autocomplete: 'off',
+            }}
+            register={{
+              ...register('password', {
+                minLength: {
+                  value: 6,
+                  message: 'Длина пароля должна быть от 6 до 40 символов',
+                },
+                maxLength: {
+                  value: 40,
+                  message: 'Длина пароля должна быть от 6 до 40 символов',
+                },
+              }),
+            }}
           />
-          {image && <span className={s.profile__error}>{image.message}</span>}
+        </li>
+        <li className={s.profile__item}>
+          <Input
+            errors={errors}
+            setting={{ name: 'image', label: 'Avatar image (url)', placeholder: 'Image url', type: 'text' }}
+            register={{
+              ...register('image', {
+                pattern: {
+                  value: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                  message: 'Некорректный url-адрес',
+                },
+              }),
+            }}
+          />
         </li>
       </ul>
       <input className={s.profile__submit} value="Save" type="submit" />
@@ -120,4 +110,17 @@ const Profile = ({ history, setUser }) => {
   )
 }
 
-export default Profile
+const mapStateToProps = (state) => {
+  return {
+    state,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  const { signInAction } = bindActionCreators(actions, dispatch)
+  return {
+    signInAction,
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)

@@ -1,18 +1,24 @@
-/*eslint-disable*/
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect, useHistory, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+
+import ServiceBlog from '../../serviceBlog/ServiceBlog'
+import Input from '../Input/Input'
+import * as userActions from '../../store/actions/UserActions'
+import * as articleActions from '../../store/actions/ArticlesAction'
 
 import s from './Authorization.module.scss'
-import ServiceBlog from '../../serviceBlog/ServiceBlog'
 
 const Authorization = (props) => {
   const { authorizationUser } = new ServiceBlog()
-  const { setUser, setIsLogin, history } = props
-
+  const { state } = useLocation()
+  const history = useHistory()
+  const { signInAction, isLoggedIn, setLoadingAction } = props
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     setError,
   } = useForm({ mode: 'onBlur' })
@@ -20,8 +26,8 @@ const Authorization = (props) => {
   const onSubmit = (data) => {
     authorizationUser(data)
       .then(({ user }) => {
-        setIsLogin(true)
-        setUser(user)
+        signInAction(user.token)
+        setLoadingAction()
         localStorage.setItem('token', user.token)
         history.push('/articles')
       })
@@ -30,45 +36,39 @@ const Authorization = (props) => {
       })
   }
 
-  const { email, password } = errors
+  if (isLoggedIn) {
+    return <Redirect to={state?.from || '/'} />
+  }
 
   return (
     <form className={s.auth} onSubmit={handleSubmit(onSubmit)}>
       <h1>Sign In</h1>
       <ul className={s.auth__list}>
         <li className={s.auth__item}>
-          <label className={s.auth__label} htmlFor="email">
-            Email address
-          </label>
-          <input
-            {...register('email', {
-              required: 'Поле не должно быть пустым',
-              pattern: {
-                value: /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/,
-                message: 'Некорректный email',
-              },
-            })}
-            className={`${s.auth__input} ${email ? s.auth__input_error : null}`}
-            type="email"
-            placeholder="Email address"
-            id="email"
+          <Input
+            errors={errors}
+            setting={{ type: 'text', name: 'email', label: 'Email address', placeholder: 'Email address' }}
+            register={{
+              ...register('email', {
+                required: 'Поле не должно быть пустым',
+                pattern: {
+                  value: /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/,
+                  message: 'Некорректный email',
+                },
+              }),
+            }}
           />
-          {email ? <span className={s.auth__error}>{email.message}</span> : null}
         </li>
         <li className={s.auth__item}>
-          <label className={s.auth__label} htmlFor="password">
-            Password
-          </label>
-          <input
-            {...register('password', {
-              required: 'Поле не должно быть пустым',
-            })}
-            className={`${s.auth__input} ${password ? s.auth__input_error : null}`}
-            type="password"
-            placeholder="Password"
-            id="password"
+          <Input
+            errors={errors}
+            setting={{ type: 'password', name: 'password', label: 'Password', placeholder: 'Password' }}
+            register={{
+              ...register('password', {
+                required: 'Поле не должно быть пустым',
+              }),
+            }}
           />
-          {password ? <span className={s.auth__error}>{password.message}</span> : null}
         </li>
       </ul>
       <div className={s.auth__action}>
@@ -85,4 +85,19 @@ const Authorization = (props) => {
   )
 }
 
-export default Authorization
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.user.isLoggedIn,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  const actions = { ...userActions, ...articleActions }
+  const { signInAction, setLoadingAction } = bindActionCreators(actions, dispatch)
+  return {
+    signInAction,
+    setLoadingAction,
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Authorization)

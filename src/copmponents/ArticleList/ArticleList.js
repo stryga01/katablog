@@ -1,35 +1,24 @@
-/*eslint-disable*/
-
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { Pagination, Spin } from 'antd'
+import { Pagination } from 'antd'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
 import ArticleItem from '../ArticleItem/ArticleItem'
+import * as actions from '../../store/actions/ArticlesAction'
+import Spinner from '../Spinner/Spinner'
+import AlertMessage from '../AlertMessage/AlertMessage'
 
 import s from './Article.module.scss'
-import './ArticleList.css'
-import ServiceBlog from '../../serviceBlog/ServiceBlog'
+import '../../styles/antd.scss'
 
 const ArticleList = (props) => {
-  const [total, setTotal] = useState(0)
-  const [articles, setArticles] = useState([])
-  // const [currentPage, setCurrentPage] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const { getArticles } = new ServiceBlog()
-
-  const { currentPage, setCurrentPage } = props
+  const { articles, total, getArticlesAction, currentPage, setCurrentPage, loading, token, error } = props
 
   useEffect(() => {
-    setLoading(true)
-  }, [currentPage])
+    getArticlesAction(currentPage, token)
+  }, [currentPage, token])
 
-  useEffect(() => {
-    getArticles(currentPage).then(({ articles, articlesCount }) => {
-      setArticles(articles)
-      setTotal(articlesCount)
-      setLoading(false)
-    })
-  }, [currentPage])
   const listEl = articles.map((article) => {
     return (
       <li key={uuidv4()}>
@@ -37,9 +26,11 @@ const ArticleList = (props) => {
       </li>
     )
   })
-  return (
+  return error ? (
+    <AlertMessage text="Что-то пошло не так" />
+  ) : (
     <div className={s.articleList__container}>
-      {loading ? <Spin size="large" /> : <ul className={s.articleList}>{listEl}</ul>}
+      {loading ? <Spinner styles={false} /> : <ul className={s.articleList}>{listEl}</ul>}
       {!loading ? (
         <Pagination
           showSizeChanger={false}
@@ -53,4 +44,23 @@ const ArticleList = (props) => {
   )
 }
 
-export default ArticleList
+const mapStateToProps = ({ articles, user }) => {
+  return {
+    articles: articles.articles,
+    total: articles.total,
+    currentPage: articles.currentPage,
+    loading: articles.loading,
+    token: user.token,
+    error: articles.error,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  const { getArticlesAction, setCurrentPage } = bindActionCreators(actions, dispatch)
+  return {
+    getArticlesAction,
+    setCurrentPage,
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArticleList)

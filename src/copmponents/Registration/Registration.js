@@ -1,14 +1,20 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect, useHistory, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
+import Input from '../Input/Input'
 import ServiceBlog from '../../serviceBlog/ServiceBlog'
+import * as actions from '../../store/actions/UserActions'
 
 import s from './Registration.module.scss'
 
-const Registration = ({ history, setIsLogin, setUser }) => {
+const Registration = (props) => {
   const { registerUser } = new ServiceBlog()
-
+  const { state } = useLocation()
+  const history = useHistory()
+  const { signInAction, isLoggedIn } = props
   const {
     register,
     formState: { errors, isValid },
@@ -22,9 +28,8 @@ const Registration = ({ history, setIsLogin, setUser }) => {
   const onSubmit = (data) => {
     registerUser(data)
       .then(({ user }) => {
+        signInAction(user.token)
         localStorage.setItem('token', user.token)
-        setUser(user)
-        setIsLogin(true)
         history.push('/articles')
       })
       .catch(({ errors }) => {
@@ -36,92 +41,85 @@ const Registration = ({ history, setIsLogin, setUser }) => {
         }
       })
   }
-  const { username, email, password, confirmPassword } = errors
+
+  if (isLoggedIn) {
+    return <Redirect to={state?.from || '/'} />
+  }
   return (
     <form className={s.registration} onSubmit={handleSubmit(onSubmit)}>
       <h1>Create new account</h1>
       <ul className={s.registration__list}>
         <li className={s.registration__item}>
-          <label className={s.registration__label} htmlFor="username">
-            Username
-          </label>
-          <input
-            {...register('username', {
-              required: 'Поле обязательно к заполнению',
-              minLength: {
-                value: 3,
-                message: 'Длина от 3 до 20 символов',
-              },
-              maxLength: {
-                value: 20,
-                message: 'Длина от 3 до 20 символов',
-              },
-            })}
-            placeholder="Username"
-            id="username"
-            className={`${s.registration__input} ${username && s.registration__input_error}`}
+          <Input
+            errors={errors}
+            setting={{ name: 'username', type: 'text', label: 'Username', placeholder: 'Username' }}
+            register={{
+              ...register('username', {
+                required: 'Поле обязательно к заполнению',
+                minLength: {
+                  value: 3,
+                  message: 'Длина от 3 до 20 символов',
+                },
+                maxLength: {
+                  value: 20,
+                  message: 'Длина от 3 до 20 символов',
+                },
+              }),
+            }}
           />
-          {username && <span className={s.registration__error}>{username.message}</span>}
         </li>
         <li className={s.registration__item}>
-          <label className={s.registration__label} htmlFor="email">
-            Email address
-          </label>
-          <input
-            {...register('email', {
-              required: 'Поле обязательно к заполнению',
-              pattern: {
-                value: /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/,
-                message: 'Некорректный email',
-              },
-            })}
-            placeholder="Email address"
-            className={`${s.registration__input} ${email && s.registration__input_error}`}
-            type="email"
-            id="email"
+          <Input
+            errors={errors}
+            setting={{ type: 'email', name: 'email', label: 'Email address', placeholder: 'Email address' }}
+            register={{
+              ...register('email', {
+                required: 'Поле обязательно к заполнению',
+                pattern: {
+                  value: /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/,
+                  message: 'Некорректный email',
+                },
+              }),
+            }}
           />
-          {email && <span className={s.registration__error}>{email.message}</span>}
         </li>
         <li className={s.registration__item}>
-          <label className={s.registration__label} htmlFor="password">
-            Password
-          </label>
-          <input
-            {...register('password', {
-              required: 'Поле обязательно к заполнению',
-              minLength: {
-                value: 6,
-                message: 'Длина пароля должна быть от 6 до 40 символов',
-              },
-              maxLength: {
-                value: 40,
-                message: 'Длина пароля должна быть от 6 до 40 символов',
-              },
-            })}
-            placeholder="Password"
-            className={`${s.registration__input} ${password && s.registration__input_error}`}
-            id="password"
-            type="password"
+          <Input
+            errors={errors}
+            setting={{ type: 'password', name: 'password', label: 'Password', placeholder: 'Password' }}
+            register={{
+              ...register('password', {
+                required: 'Поле обязательно к заполнению',
+                minLength: {
+                  value: 6,
+                  message: 'Длина пароля должна быть от 6 до 40 символов',
+                },
+                maxLength: {
+                  value: 40,
+                  message: 'Длина пароля должна быть от 6 до 40 символов',
+                },
+              }),
+            }}
           />
-          {password && <span className={s.registration__error}>{password.message}</span>}
         </li>
         <li className={s.registration__item}>
-          <label className={s.registration__label} htmlFor="repeatPassword">
-            Repeat Password
-          </label>
-          <input
-            {...register('confirmPassword', {
-              required: true,
-              validate: (value) => {
-                return value === passwordValue || 'Пароли не совпадают'
-              },
-            })}
-            placeholder="Repeat Password"
-            className={`${s.registration__input} ${confirmPassword ? s.registration__input_error : null}`}
-            id="repeatPassword"
-            type="password"
+          <Input
+            errors={errors}
+            setting={{
+              type: 'password',
+              name: 'confirmPassword',
+              label: 'Repeat Password',
+              placeholder: 'Repeat Password',
+            }}
+            register={{
+              ...register('confirmPassword', {
+                required: true,
+                validate: (value) => {
+                  return value === passwordValue || 'Пароли не совпадают'
+                },
+              }),
+            }}
           />
-          {confirmPassword ? <span className={s.registration__error}>{confirmPassword.message}</span> : null}
         </li>
       </ul>
       <div className={s.registration__personal}>
@@ -151,4 +149,17 @@ const Registration = ({ history, setIsLogin, setUser }) => {
   )
 }
 
-export default Registration
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.user.isLoggedIn,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  const { signInAction } = bindActionCreators(actions, dispatch)
+  return {
+    signInAction,
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Registration)

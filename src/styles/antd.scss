@@ -1,0 +1,29 @@
+ul>li.ant-pagination-item.ant-pagination-item-active{
+  background-color: #1890FF;
+}
+
+ul>li.ant-pagination-item.ant-pagination-item-active:hover{
+  border-color:#ffffff;
+}
+
+ul>li.ant-pagination-item.ant-pagination-item-active:hover a{
+  color: white
+}
+
+ul>li.ant-pagination-item.ant-pagination-item-active a {
+  color: white
+}
+
+ul>li.ant-pagination-item.ant-pagination-item-active a:hover {
+  color: white
+}
+
+h3.ant-typography.ant-typography-ellipsis.ant-typography-ellipsis-multiple-line{
+  font-weight: 500;
+  margin: 0;
+}
+
+div.ant-typography.ant-typography-ellipsis.ant-typography-ellipsis-multiple-line{
+  margin: 0;
+  opacity: 0.5;
+}

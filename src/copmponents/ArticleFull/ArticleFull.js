@@ -1,37 +1,46 @@
-import React, { useEffect, useState } from 'react'
-import { Alert, Spin } from 'antd'
+import React, { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 import ArticleItem from '../ArticleItem/ArticleItem'
-import ServiceBlog from '../../serviceBlog/ServiceBlog'
+import * as actions from '../../store/actions/ArticlesAction'
+import Spinner from '../Spinner/Spinner'
+import AlertMessage from '../AlertMessage/AlertMessage'
 
 import s from './ArticleFull.module.scss'
 
-const ArticleFull = ({ slug }) => {
-  const [article, setArticle] = useState({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const { getArticle } = new ServiceBlog()
+const ArticleFull = (props) => {
+  const { token, getFullArticle, fullArticle, loading, error } = props
+  const { slug } = useParams()
 
   useEffect(() => {
-    getArticle(slug)
-      .then(({ article }) => {
-        setArticle(article)
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-        setError(true)
-      })
+    getFullArticle(slug, token)
   }, [])
 
-  const errorEl = error ? <Alert message="Статья не найдена" type="warning" style={{ width: 800, height: 50 }} /> : null
-  const content = error ? null : loading ? <Spin size="large" /> : <ArticleItem article={article} isFull />
-  return (
-    <div className={s.container}>
-      {errorEl}
-      {content}
+  return error ? (
+    <AlertMessage text="Статья не найдена" />
+  ) : (
+    <div className={s.article__container}>
+      {loading ? <Spinner styles /> : <ArticleItem article={fullArticle} isFull />}
     </div>
   )
 }
 
-export default ArticleFull
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    fullArticle: state.articles.fullArticle,
+    loading: state.articles.loading,
+    error: state.articles.error,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  const { getFullArticle } = bindActionCreators(actions, dispatch)
+  return {
+    getFullArticle,
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArticleFull)
