@@ -35,7 +35,7 @@ const ArticleFormHoc = ({ getFullArticle, token, fullArticle, loading, error }) 
   ) : defaultValue ? (
     <ArticleForm defaultValue={defaultValue} author={fullArticle.author} edit />
   ) : loading ? (
-    <Spinner />
+    <Spinner styles />
   ) : null
 }
 
