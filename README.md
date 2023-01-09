@@ -1,1 +1,1 @@
-https://github.com/stryga01/katablog
+https://katablog-stryga01.vercel.app/articles
