@@ -7,8 +7,13 @@ const { GET_CURRENT_USER, LOG_OUT, SIGN_IN } = types
 
 export const getCurrentUserAction = (token) => {
   return async (dispatch) => {
-    getCurrentUser(token).then(({ user }) => {
-      dispatch({ type: GET_CURRENT_USER, payload: user })
+    getCurrentUser(token).then((res) => {
+      if (res.errors.error.status === 401) {
+        localStorage.removeItem('token')
+        dispatch(logOutAction())
+        return
+      }
+      dispatch({ type: GET_CURRENT_USER, payload: res.user })
     })
   }
 }
