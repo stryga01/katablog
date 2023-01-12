@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import Input from '../Input/Input'
-import ServiceBlog from '../../serviceBlog/ServiceBlog'
-import * as actions from '../../store/actions/UserActions'
+import Input from '../../Input/Input'
+import ServiceBlog from '../../../serviceBlog/ServiceBlog'
+import * as actions from '../../../store/actions/UserActions'
 
 import s from './Registration.module.scss'
 
@@ -17,7 +17,7 @@ const Registration = (props) => {
   const { signInAction, isLoggedIn } = props
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     watch,
     setError,
@@ -122,7 +122,7 @@ const Registration = (props) => {
           />
         </li>
       </ul>
-      <div className={s.registration__personal}>
+      <div className={`${s.registration__personal}`}>
         <input
           {...register('checkbox', {
             required: true,
@@ -131,12 +131,17 @@ const Registration = (props) => {
           id="personal"
           type="checkbox"
         />
-        <label className={`${s.registration__label} ${s.registration__personalColor}`} htmlFor="personal">
+        <label
+          className={`${s.registration__label} ${errors.checkbox && s.registration__label_error} ${
+            s.registration__personalColor
+          } `}
+          htmlFor="personal"
+        >
           I agree to the processing of my personal information
         </label>
       </div>
       <div className={s.registration__action}>
-        <input disabled={!isValid} type="submit" value="Create" className={s.registration__submit} />
+        <input type="submit" value="Create" className={s.registration__submit} />
 
         <span className={s.registration__signIn}>
           Already have an account?

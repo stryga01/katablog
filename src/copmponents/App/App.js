@@ -5,19 +5,29 @@ import { bindActionCreators } from 'redux'
 
 import ArticleList from '../ArticleList/ArticleList'
 import ArticleFull from '../ArticleFull/ArticleFull'
-import Registration from '../Registration/Registration'
-import Authorization from '../Authorization/Authorization'
+import Registration from '../pages/Registration/Registration'
+import Authorization from '../pages/Authorization/Authorization'
 import Header from '../Header/Header'
-import Profile from '../Profile/Profile'
 import * as actions from '../../store/actions/UserActions'
 import PrivateRoute from '../../hoc/PrivateRoute'
 import ArticleFormHoc from '../../hoc/ArticleFormHoc'
-import ArticleForm from '../ArticleForm/ArticleForm'
+import ArticleForm from '../pages/ArticleForm/ArticleForm'
+import ProfileHoc from '../../hoc/ProfileHoc'
 
 import s from './App.module.scss'
 
 const App = (props) => {
-  const { getCurrentUserAction, isLoggedIn, token, currentUser, logOutAction } = props
+  const { getCurrentUserAction, isLoggedIn, token, currentUser, logOutAction, setIsLoggedIn, setToken } = props
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setIsLoggedIn(false)
+    } else {
+      setIsLoggedIn(true)
+      setToken(token)
+    }
+  }, [])
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -36,7 +46,7 @@ const App = (props) => {
               <ArticleForm />
             </PrivateRoute>
             <PrivateRoute path="/profile">
-              <Profile />
+              <ProfileHoc />
             </PrivateRoute>
             <PrivateRoute path="/articles/:slug/edit/">
               <ArticleFormHoc />
@@ -63,8 +73,8 @@ const mapStateToProps = ({ user }) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const { getCurrentUserAction, logOutAction } = bindActionCreators(actions, dispatch)
-  return { getCurrentUserAction, logOutAction }
+  const { getCurrentUserAction, logOutAction, setIsLoggedIn, setToken } = bindActionCreators(actions, dispatch)
+  return { getCurrentUserAction, logOutAction, setIsLoggedIn, setToken }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

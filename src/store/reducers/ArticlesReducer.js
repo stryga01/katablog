@@ -1,3 +1,13 @@
+import {
+  DELETE_ARTICLE,
+  GET_ARTICLES,
+  GET_FULL_ARTICLE,
+  SET_CURRENT_PAGE,
+  SET_ERROR,
+  SET_FAVORITE,
+  SET_LOADING,
+} from '../reduxTypes'
+
 const initialState = {
   total: 0,
   articles: [],
@@ -9,16 +19,16 @@ const initialState = {
 
 export const ArticlesReducer = (state = initialState, { type, payload }) => {
   switch (type) {
-    case 'GET_ARTICLES': {
+    case GET_ARTICLES: {
       return { ...state, articles: [...payload.articles], total: payload.total, loading: false, error: false }
     }
-    case 'GET_FULL_ARTICLE': {
+    case GET_FULL_ARTICLE: {
       return { ...state, fullArticle: payload, loading: false, error: false }
     }
-    case 'SET_CURRENT_PAGE': {
+    case SET_CURRENT_PAGE: {
       return { ...state, currentPage: payload, loading: true, error: false }
     }
-    case 'SET_FAVORITE': {
+    case SET_FAVORITE: {
       const idx = state.articles.findIndex((el) => el.slug === payload.article.slug)
       const favoriteArticle = {
         ...state.articles[idx],
@@ -32,18 +42,18 @@ export const ArticlesReducer = (state = initialState, { type, payload }) => {
       }
     }
 
-    case 'DELETE_ARTICLE': {
+    case DELETE_ARTICLE: {
       return {
         ...state,
         articles: state.articles.filter((article) => article.slug !== payload),
       }
     }
 
-    case 'SET_LOADING': {
+    case SET_LOADING: {
       return { ...state, loading: payload || true, error: false }
     }
 
-    case 'SET_ERROR': {
+    case SET_ERROR: {
       return {
         ...state,
         error: true,

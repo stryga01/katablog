@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import ArticleForm from '../copmponents/ArticleForm/ArticleForm'
+import ArticleForm from '../copmponents/pages/ArticleForm/ArticleForm'
 import * as actions from '../store/actions/ArticlesAction'
 import Spinner from '../copmponents/Spinner/Spinner'
 import AlertMessage from '../copmponents/AlertMessage/AlertMessage'

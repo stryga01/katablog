@@ -3,29 +3,33 @@ import { useForm } from 'react-hook-form'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import ServiceBlog from '../../serviceBlog/ServiceBlog'
-import Input from '../Input/Input'
-import * as actions from '../../store/actions/UserActions'
+import ServiceBlog from '../../../serviceBlog/ServiceBlog'
+import Input from '../../Input/Input'
+import * as actions from '../../../store/actions/UserActions'
 
 import s from './Profile.module.scss'
 
-const Profile = ({ signInAction }) => {
+const Profile = (props) => {
+  const { signInAction } = props
   const { updateCurrentUser } = new ServiceBlog()
 
   const {
     register,
     formState: { errors },
     handleSubmit,
-    reset,
     setError,
-  } = useForm({ mode: 'onBlur' })
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues: {
+      ...props?.defaultValues,
+    },
+  })
 
   const onSubmit = (data) => {
     const token = localStorage.getItem('token')
     updateCurrentUser(data, token)
       .then(({ user }) => {
         signInAction(user.token)
-        reset()
       })
       .catch(({ errors }) => {
         if (errors.username) {
@@ -112,7 +116,7 @@ const Profile = ({ signInAction }) => {
 
 const mapStateToProps = (state) => {
   return {
-    state,
+    currentUser: state.user.currentUser,
   }
 }
 

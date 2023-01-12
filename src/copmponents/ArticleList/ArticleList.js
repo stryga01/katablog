@@ -37,7 +37,7 @@ const ArticleList = (props) => {
           onChange={(page) => setCurrentPage(page)}
           current={currentPage}
           total={total}
-          pageSize={20}
+          pageSize={5}
         />
       ) : null}
     </div>

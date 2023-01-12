@@ -10,7 +10,7 @@ import s from './Header.module.scss'
 
 const Header = (props) => {
   const { isLoggedIn, currentUser, logOutAction, setCurrentPage, currentPage, setLoadingAction } = props
-  const { username, image } = currentUser
+
   const location = useLocation()
   const logOut = () => {
     localStorage.removeItem('token')
@@ -39,9 +39,9 @@ const Header = (props) => {
           ) : null}
 
           <Link to="/profile">
-            <span className={s.header__username}>{username}</span>
+            <span className={s.header__username}>{currentUser?.username}</span>
           </Link>
-          {isLoggedIn && <Avatar currentUser={true} image={image} />}
+          {isLoggedIn && <Avatar currentUser={true} image={currentUser?.image} />}
           <div className={s.header__actions}>
             {!isLoggedIn && (
               <button className={s.header__btn}>

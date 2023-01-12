@@ -12,9 +12,9 @@ class ServiceBlog {
   getArticles = async (page, token) => {
     let offset = 0
     for (let i = 1; i < page; i++) {
-      offset += 20
+      offset += 5
     }
-    return await this.getResource(`articles?offset=${offset}`, {
+    return await this.getResource(`articles?offset=${offset}&limit=5`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

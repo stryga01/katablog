@@ -4,10 +4,10 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 
-import Input from '../Input/Input'
-import TagsForm from '../TagsForm/TagsForm'
-import ServiceBlog from '../../serviceBlog/ServiceBlog'
-import * as actions from '../../store/actions/ArticlesAction'
+import Input from '../../Input/Input'
+import TagsForm from '../../TagsForm/TagsForm'
+import ServiceBlog from '../../../serviceBlog/ServiceBlog'
+import * as actions from '../../../store/actions/ArticlesAction'
 
 import s from './ArticleForm.module.scss'
 

@@ -1,19 +1,30 @@
 import ServiceBlog from '../../serviceBlog/ServiceBlog'
+import * as types from '../reduxTypes'
+import { SET_IS_LOGGED_IN, SET_TOKEN } from '../reduxTypes'
 
 const { getCurrentUser } = new ServiceBlog()
+const { GET_CURRENT_USER, LOG_OUT, SIGN_IN } = types
 
 export const getCurrentUserAction = (token) => {
   return async (dispatch) => {
     getCurrentUser(token).then(({ user }) => {
-      dispatch({ type: 'GET_CURRENT_USER', payload: user })
+      dispatch({ type: GET_CURRENT_USER, payload: user })
     })
   }
 }
 
 export const logOutAction = () => {
-  return { type: 'LOG_OUT' }
+  return { type: LOG_OUT }
 }
 
 export const signInAction = (token) => {
-  return { type: 'SIGN_IN', payload: token }
+  return { type: SIGN_IN, payload: token }
+}
+
+export const setToken = (token) => {
+  return { type: SET_TOKEN, payload: token }
+}
+
+export const setIsLoggedIn = () => {
+  return { type: SET_IS_LOGGED_IN }
 }

@@ -46,21 +46,24 @@
     height: 16px;
     transform: translateY(4px);
   }
+  &__personal{
+       display: flex;
+       padding: 8px 0;
+       align-items: baseline;
+       border-top: 1px solid #d9d9d9;
+       gap: 7px;
+  }
+  &__personalColor{
+    color: #595959;
+  }
   &__label{
     font-size: 14px;
     font-weight: 600;
     line-height: 22px;
     font-family: 'Roboto', sans-serif;
-  }
-  &__personal{
-    display: flex;
-    padding: 8px 0;
-    align-items: baseline;
-    border-top: 1px solid #d9d9d9;
-    gap: 7px;
-  }
-  &__personalColor{
-    color: #595959;
+    &_error{
+      color:red;
+    }
   }
   &__action{
     display: flex;

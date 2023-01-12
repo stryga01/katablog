@@ -69,7 +69,7 @@ const ArticleItem = (props) => {
       </div>
       <div className={s.article__author}>
         <Author author={author} createdAt={createdAt} updatedAt={updatedAt} />
-        {author.username === currentUser.username && isFull ? (
+        {author.username === currentUser?.username && isFull ? (
           <div className={s.article__groupBtn}>
             <Popconfirm
               placement="rightTop"

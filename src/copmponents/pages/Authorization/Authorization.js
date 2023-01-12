@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import ServiceBlog from '../../serviceBlog/ServiceBlog'
-import Input from '../Input/Input'
-import * as userActions from '../../store/actions/UserActions'
-import * as articleActions from '../../store/actions/ArticlesAction'
+import ServiceBlog from '../../../serviceBlog/ServiceBlog'
+import Input from '../../Input/Input'
+import * as userActions from '../../../store/actions/UserActions'
+import * as articleActions from '../../../store/actions/ArticlesAction'
 
 import s from './Authorization.module.scss'
 
@@ -33,6 +33,7 @@ const Authorization = (props) => {
       })
       .catch(() => {
         setError('email', { type: 'invalid', message: 'email or password is invalid' })
+        setError('password', { type: 'invalid', message: 'email or password is invalid' })
       })
   }
 

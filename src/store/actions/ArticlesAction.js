@@ -1,13 +1,14 @@
 import ServiceBlog from '../../serviceBlog/ServiceBlog'
+import * as types from '../reduxTypes'
 
 const { getArticles, setFavorite, getArticle, deleteArticle } = new ServiceBlog()
-
+const { GET_ARTICLES, SET_FAVORITE, DELETE_ARTICLE, SET_LOADING, GET_FULL_ARTICLE, SET_ERROR, SET_CURRENT_PAGE } = types
 export const getArticlesAction = (currentPage, token) => {
   return async (dispatch) => {
     getArticles(currentPage, token)
       .then(({ articles, articlesCount }) => {
         dispatch({
-          type: 'GET_ARTICLES',
+          type: GET_ARTICLES,
           payload: {
             articles: articles,
             total: articlesCount,
@@ -24,7 +25,7 @@ export const setLikeAction = (slug, token, method) => {
   return async (dispatch) => {
     setFavorite(slug, token, method).then(({ article }) => {
       dispatch({
-        type: 'SET_FAVORITE',
+        type: SET_FAVORITE,
         payload: {
           article: article,
           favorited: article.favorited,
@@ -40,7 +41,7 @@ export const getFullArticle = (slug, token) => {
     getArticle(slug, token)
       .then(({ article }) => {
         dispatch({
-          type: 'GET_FULL_ARTICLE',
+          type: GET_FULL_ARTICLE,
           payload: article,
         })
       })
@@ -51,18 +52,18 @@ export const getFullArticle = (slug, token) => {
 }
 
 export const setLoadingAction = () => {
-  return { type: 'SET_LOADING' }
+  return { type: SET_LOADING }
 }
 
 export const setCurrentPage = (page) => {
-  return { type: 'SET_CURRENT_PAGE', payload: page }
+  return { type: SET_CURRENT_PAGE, payload: page }
 }
 
 export const deleteArticleAction = (slug, token) => {
   return async (dispatch) => {
     deleteArticle(slug, token).then(() => {
       dispatch({
-        type: 'DELETE_ARTICLE',
+        type: DELETE_ARTICLE,
         payload: slug,
       })
     })
@@ -71,6 +72,6 @@ export const deleteArticleAction = (slug, token) => {
 
 export const setError = () => {
   return {
-    type: 'SET_ERROR',
+    type: SET_ERROR,
   }
 }
