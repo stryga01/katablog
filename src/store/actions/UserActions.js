@@ -25,6 +25,6 @@ export const setToken = (token) => {
   return { type: SET_TOKEN, payload: token }
 }
 
-export const setIsLoggedIn = () => {
-  return { type: SET_IS_LOGGED_IN }
+export const setIsLoggedIn = (bool) => {
+  return { type: SET_IS_LOGGED_IN, payload: bool }
 }
